@@ -1,18 +1,22 @@
-#' Summarise an Empirical Probability Distribution Function.
+#' Summarise empirical distribution
 #'
-#' @param x A vector of values of empirical PDF
-#' @param p A vector of probabilities
-#' @details Calculation of the mode is naive. For a multimodal distribution only
-#' the highest is returned, in the case of 2 or more modes with exactly the same
-#'  probability, the first is returned.
+#' Summarise an empirical probability distribution function.
+#'
+#' Calculation of the mode is naive. For a multimodal distribution only the
+#' highest is returned, in the case of 2 or more modes with exactly the same
+#' probability, the first is returned.
+#'
+#' @param x numeric; vector of values of the empirical PDF.
+#' @param p numeric; vector of probabilities of the empirical PDF.
 #' @return Returns a named vector with the mean, median, mode, and standard
-#' deviation of the empirical PDF
-#' @export
+#' deviation of the empirical PDF.
+#' @author Andrew Dolman <andrew.dolman@awi.de>
 #' @examples
 #' df <- data.frame(x = 1:10)
 #' df$p <- dnorm(df$x, 5, 2)
 #' SummariseEmpiricalPDF(df$x, df$p)
-SummariseEmpiricalPDF <- function(x, p){
+#' @export
+SummariseEmpiricalPDF <- function(x, p) {
 
   # Ensure x and p are sorted
   p <- p[order(x)]
@@ -26,7 +30,7 @@ SummariseEmpiricalPDF <- function(x, p){
 
   # SD
   M <- sum(p > 0)
-  w.sd <- sqrt(sum(p * (x-w.mean)^2) / ((M-1)/M * sum(p)))
+  w.sd <- sqrt(sum(p * (x - w.mean)^2) / ((M - 1)/ M * sum(p)))
 
   # Median
   csum.p <- cumsum(p)
@@ -36,24 +40,26 @@ SummariseEmpiricalPDF <- function(x, p){
   # Mode
   max.wt <- max(p)
   n.max <- sum(p == max.wt)
-  if (n.max > 1) warning(paste0(n.max,
-                                " x with equal maximum probability. Returning the first"))
+  if (n.max > 1) {
+    warning(paste0(n.max,
+                   " x with equal maximum probability. Returning the first"))
+  }
   mode <- x[which.max(p)]
 
   return(c("mean" = w.mean, "median" = w.median, "mode" = mode, "sd" = w.sd))
 }
 
-#' Expected range
+#' Expected range of observations
 #'
-#' Calculates the expected range of n observations drawn from a distibution with standard deviation sd
-#' @param sd standard deviation
-#' @param n number of observations
+#' Calculates the expected range of n observations drawn from a distribution with
+#' standard deviation sd.
 #'
-#' @return numeric
-#' @export
-#'
+#' @param sd numeric; standard deviation.
+#' @param n integer; number of observations.
+#' @return Numeric value with the expected range of the observation values,
+#'   i.e. the difference between maximum and minimum value.
+#' @author Andrew Dolman <andrew.dolman@awi.de>
 #' @examples
-#'
 #' ExpectedRange(5, 15)
 #'
 #' \dontrun{
@@ -74,9 +80,10 @@ SummariseEmpiricalPDF <- function(x, p){
 #'   geom_hline(aes(yintercept = exp.range)) +
 #'   facet_wrap(~n)
 #'   }
+#' @export
 ExpectedRange <- function(sd, n) {
 
-  f <- function(x, n) n * x * stats::pnorm(x)^(n - 1) * stats::dnorm(x)
+  f <- function(x, n) {n * x * stats::pnorm(x)^(n - 1) * stats::dnorm(x)}
 
   exp.range <- 2 * sd * stats::integrate(f, -Inf, Inf, n = n)$value
 

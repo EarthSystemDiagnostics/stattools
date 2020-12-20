@@ -1,36 +1,40 @@
 #' Population standard deviation
 #'
-#' @param x 
+#' Calculate the population standard deviation.
 #'
-#' @return numeric, population standard deviation
-#' @export
-#'
+#' @param x numeric; vector of values.
+#' @return The population standard deviation value of \code{x}.
+#' @author Andrew Dolman <andrew.dolman@awi.de>
 #' @examples
-#' 
-#' # analytical solution to SD of uniform
+#'
+#' # analytical solution to SD of uniform distribution:
 #' sqrt(1/12 * 10^2)
-#'  
+#'
 #' sd(1:10)
-#' 
+#'
 #' PopSD(1:10)
-PopSD <- function(x){
+#' @export
+PopSD <- function(x) {
+
   n <- length(x)
-  adj <- sqrt((n-1) / n)
+  adj <- sqrt((n - 1) / n)
   adj * stats::sd(x)
 }
 
-
-#' @title Standard deviation (error) of a standard deviation
-#' @description Calculate the standard deviation (i.e. standard error) of a
-#' standard deviation, given n, the number of samples from which the standard
-#' deviation was estimated.
-#' @param s standard deviation
-#' @param n number of samples from which s was estimated
-#' @return numeric
-#' @details if n <= 0 an exact method is used, otherwise Stirling's
-#'  approximation is used to avoid numerical errors calculating the gamma
-#'  function for large values of n. Formulae taken from
-#'  https://stats.stackexchange.com/q/28567
+#' Standard deviation (error) of standard deviation
+#'
+#' Calculate the standard deviation (i.e. standard error) of a standard
+#' deviation, given n, the number of samples from which the standard deviation
+#' was estimated.
+#'
+#' If n <= 300, an exact method is used, otherwise Stirling's approximation is
+#' used to avoid numerical errors calculating the gamma function for large
+#' values of n. Formulae taken from https://stats.stackexchange.com/q/28567.
+#'
+#' @param s numeric; estimated standard deviation.
+#' @param n integer; number of samples from which \code{s} was estimated.
+#' @return Numeric value giving the standard error of the estimated standard
+#'   deviation \code{s}.
 #' @author Andrew Dolman <andrew.dolman@awi.de>
 #' @examples
 #' \dontrun{
@@ -43,47 +47,44 @@ PopSD <- function(x){
 #'   geom_line()
 #'  }
 #' }
-#' @rdname SDofSD
 #' @export
 SDofSD <- function(s, n) {
+
   if (any(n < 2, na.rm = TRUE))
     warning("n must be greater than or equal to 2")
   if (any(s < 0, na.rm = TRUE))
     warning("s must be >= 0")
-  if(length(s) > 1 & length(n)==1)
+  if(length(s) > 1 & length(n) == 1)
     n <- rep(n, length(s))
-  if(length(n) > 1 & length(s)==1)
+  if(length(n) > 1 & length(s) == 1)
     s <- rep(s, length(n))
   if(length(s) != length(n))
-    stop("s and n should be vectors of either the same length, or one of them should be length == 1")
+    stop("'s' and 'n' should be vectors of either the same length, ",
+         "or one of them should be length == 1.")
 
   ifelse(n <= 300, {
     message("Method: Exact")
     g.a <- gamma((n - 1) / 2)
     g.b <- gamma(n / 2)
     s * (g.a / g.b) * sqrt((n - 1) / 2 - (g.b / g.a) ^ 2)
-  },  {
+  }, {
     message("Method: Stirling's approximation")
     s * sqrt(exp(1) * (1 - 1 / n) ^ (n - 1) - 1)
   })
 }
 
-
-
-#' Standard deviation of a numerical probability density function.
+#' Standard deviation of numerical probability density function
 #'
-#' Calculates the standard deviation of a numerical probability density function,
-#' i.e. a vector of values and corresponding vector of densities. It is important
-#' that the range of x values cover a sufficient fraction of the total density.
-#' For continuous distributions it should extend well into the tails. The
-#' approximation will be better the finer the resolution of x.
+#' Calculates the standard deviation for a given numerical probability density
+#' function, i.e. a vector of values and corresponding vector of densities. It
+#' is important that the range of x values covers a sufficient fraction of the
+#' total density. For continuous distributions it should extend well into the
+#' tails. The approximation will be better the finer the resolution of x.
 #'
-#' @param x vector of values
-#' @param d vector of densities, do not need to sum to 1
-#'
-#' @return numeric
-#' @export
-#' @rdname SDofNumDist
+#' @param x numeric; vector of values.
+#' @param d numeric; vector of densities, do not need to sum to 1.
+#' @return Numeric value giving the standard deviation of the given probability
+#'   density function.
 #' @author Andrew Dolman <andrew.dolman@awi.de>
 #' @examples
 #' \dontrun{
@@ -105,7 +106,9 @@ SDofSD <- function(s, n) {
 #'  sqrt(1/12 * (b-a)^2)
 #'  }
 #' }
-SDofNumDist <- function(x, d){
+#' @export
+SDofNumDist <- function(x, d) {
+
   d <- d / sum(d)
-  sqrt(sum(d*x^2) - sum(d*x)^2)
+  sqrt(sum(d * x^2) - sum(d * x)^2)
 }

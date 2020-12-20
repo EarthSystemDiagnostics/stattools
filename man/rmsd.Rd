@@ -17,7 +17,7 @@ stripped before the computation proceeds. Defaults to \code{FALSE}.}
 }
 \value{
 The root-mean-square deviation of \code{v1} and \code{v2}, or
-\code{NA} (for \code{na.rm = FALSE}) if any of their elements is \code{NA}.
+  \code{NA} (for \code{na.rm = FALSE}) if any of their elements is \code{NA}.
 }
 \description{
 Calculate the root-mean-square deviation (rmsd) of two numeric vectors.

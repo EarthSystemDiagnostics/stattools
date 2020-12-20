@@ -2,15 +2,26 @@
 % Please edit documentation in R/distribution-seasonal-temperatures.R
 \name{dSin}
 \alias{dSin}
-\title{Density of a scaled sin wave}
+\title{Probability density of scaled sine wave}
 \usage{
 dSin(x, mean.t, amp.t)
 }
 \arguments{
-\item{mean.t}{mean of sine wave}
+\item{x}{numeric; vector of values for which to obtain the probability
+densities.}
 
-\item{amp.t}{amplitude of sine wave}
+\item{mean.t}{numeric; mean of the sine wave.}
+
+\item{amp.t}{numeric; peak-to-peak amplitude of the sine wave.}
+}
+\value{
+Numeric vector of probability density values for the values given in
+  \code{x}. Values in \code{x} outside the sine wave's envelope obtain zero
+  probability.
 }
 \description{
-Density of a scaled sin wave
+Calculate the probability density for a scaled sine wave.
+}
+\author{
+Andrew Dolman <andrew.dolman@awi.de>
 }

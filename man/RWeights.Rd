@@ -2,20 +2,23 @@
 % Please edit documentation in R/RWeights.R
 \name{RWeights}
 \alias{RWeights}
-\title{Draw random number between 1 and length(weights) with the distribution}
+\title{Draw random number from distribution given the weights}
 \usage{
 RWeights(n = 1000, weights)
 }
 \arguments{
-\item{n}{Number of random numbers to be drawn}
+\item{n}{integer; number of random integers to be drawn.}
 
-\item{weights}{vector of numbers; defines the distribution}
+\item{weights}{numeric vector of weights which define the distribution.}
 }
 \value{
-vector of n random numbers between 1 and length(weights)
+Vector of \code{n} random numbers between 1 and the length of
+  \code{weights}.
 }
 \description{
-Draw random number between 1 and length(weights) with the distribution
+Draw a given number of random integer values with replacement from a
+distribution given by its weights, where the values can range between 1 and
+the length of the weights vector.
 }
 \examples{
 weights <- c(rep(1,10), 1:10, 10:1)
