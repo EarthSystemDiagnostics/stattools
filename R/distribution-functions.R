@@ -76,9 +76,9 @@ SummariseEmpiricalPDF <- function(x, p){
 #'   }
 ExpectedRange <- function(sd, n) {
 
-  f <- function(x, n) n * x * pnorm(x)^(n - 1) * dnorm(x)
+  f <- function(x, n) n * x * stats::pnorm(x)^(n - 1) * stats::dnorm(x)
 
-  exp.range <- 2 * sd * integrate(f, -Inf, Inf, n = n)$value
+  exp.range <- 2 * sd * stats::integrate(f, -Inf, Inf, n = n)$value
 
   return(exp.range)
 }

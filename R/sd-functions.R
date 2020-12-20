@@ -16,7 +16,7 @@
 PopSD <- function(x){
   n <- length(x)
   adj <- sqrt((n-1) / n)
-  adj * sd(x)
+  adj * stats::sd(x)
 }
 
 

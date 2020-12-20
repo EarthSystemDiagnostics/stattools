@@ -56,15 +56,15 @@ dSeas <- function(x=NULL, mean.t, amp.t, sd.t, return = c("density", "FUN"), res
   zin <- dSin(xin, mean.t, amp.t)
   #plot(xin, zin, type = "l")
 
-  yin <- dnorm(xin, mean.t, sd.t)
+  yin <- stats::dnorm(xin, mean.t, sd.t)
   #plot(xin, yin, type = "l")
 
-  cv <- convolve(zin, yin, type = "open")
+  cv <- stats::convolve(zin, yin, type = "open")
   cv <- cv / (sum(cv) * res2)
 
   x2 <- seq(mean.t - 2 * rng, mean.t + 2 * rng, length.out = length(cv))
 
-  FUN <- approxfun(x2, cv, yleft = 0, yright = 0)
+  FUN <- stats::approxfun(x2, cv, yleft = 0, yright = 0)
 
   ret <- match.arg(return)
 
@@ -78,9 +78,9 @@ dSeas <- function(x=NULL, mean.t, amp.t, sd.t, return = c("density", "FUN"), res
 #' @param n number of samples
 #' @export
 rSeas <- function(n, mean.t, amp.t, sd.t){
-  x <- runif(n, 0, 2*pi)
+  x <- stats::runif(n, 0, 2*pi)
   y <- mean.t + sin(x) * amp.t/2
-  z <- y + rnorm(n, 0, sd.t)
+  z <- y + stats::rnorm(n, 0, sd.t)
   return(z)
 }
 
