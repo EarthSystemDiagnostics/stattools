@@ -1,3 +1,10 @@
+# stattools 0.3.0
+
+* **New** function `ShiftCorrelation()` to run a shift correlation analysis
+  between two data vectors in order to find the optimal shift maximising the
+  correlation;
+* added unit test infrastructure.
+
 # stattools 0.2.0
 
 Minor changes:

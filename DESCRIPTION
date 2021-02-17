@@ -1,6 +1,6 @@
 Package: stattools
 Title: An R package of tools for statistical analyses
-Version: 0.2.0
+Version: 0.3.0
 Author: Thomas Muench [aut, cre], Andrew Dolman [aut], Thomas Laepple [aut]
 Maintainer: Thomas Muench <thomas.muench@awi.de>
 Description: This package contains various functions to
