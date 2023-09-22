@@ -1,3 +1,8 @@
+# stattools 0.4.0
+
+* **New** function `getEffectiveDOF()` to calculate the effective degrees of
+  freedom of an autocorrelated dataset.
+
 # stattools 0.3.0
 
 * **New** function `ShiftCorrelation()` to run a shift correlation analysis
