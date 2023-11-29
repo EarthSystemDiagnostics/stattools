@@ -96,7 +96,7 @@ t_test <- function (x, y = NULL, a1.x = 0, a1.y = 0,
   }
   else {
     ## tmuench, 2023/11/27 ->
-    ny <- stattools::getEffectiveDOF(length(y), a1.x)
+    ny <- stattools::getEffectiveDOF(length(y), a1.y)
     ## <-
     if (nx < 1 || (!var.equal && nx < 2)) 
       stop("not enough 'x' observations")
