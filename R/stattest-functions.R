@@ -38,7 +38,65 @@
 #' @seealso \code{\link[stats]{t.test}}, \code{\link{getEffectiveDOF}}
 #' @source \code{stats:::t.test.default}
 #' @author R Core Team, Thomas Münch
-#'@export
+#' @examples
+#'
+#' # Check the performance of the test on autocorrelated data
+#'
+#' # This function Monte Carlo samples autocorrelated data series from an AR1
+#' # process and runs the default t test as well as the stattools t_test to
+#' # estimate the tests' rejection rates, i.e. the relative number of false
+#' # positives where the tests reject the null hypothesis
+#' estimateRejectionRate <- function(nobs, nr, a1.x, a1.y = a1.x,
+#'                                   method = c("one.sample", "two.sample")) {
+#'
+#'  method <- match.arg(method)
+#'
+#'  # wrapper for random generation of AR1 series
+#'  redNoise <- function(a1, n) {c(arima.sim(list(ar = a1), n))}
+#'
+#'  # MC sampling of p values
+#'  pval <- array(dim = c(2, nr))
+#'  for (i in 1 : nr) {
+#'
+#'    x <- redNoise(a1.x, nobs)
+#'    if (method == "two.sample") y <- redNoise(a1.y, nobs)
+#'
+#'    if (method == "one.sample") {
+#'
+#'      tmp1 <- t.test(x)
+#'      tmp2 <- t_test(x, a1.x = a1.x)
+#'
+#'    } else {
+#'
+#'      tmp1 <- t.test(x, y)
+#'      tmp2 <- t_test(x, y, a1.x = a1.x, a1.y = a1.y)
+#'
+#'    }
+#'
+#'    # count false positives
+#'    if (tmp1$p.value <= 0.05) pval[1, i] <- 1 else pval[1, i] <- 0
+#'    if (tmp2$p.value <= 0.05) pval[2, i] <- 1 else pval[2, i] <- 0
+#'
+#'  }
+#'
+#'  # return null hypothesis rejection rates (type I error)
+#'  c(t.test.default = sum(pval[1, ]) / nr,
+#'    t_test = sum(pval[2, ]) / nr)
+#'
+#' }
+#'
+#' # The expectation is a rejection rate of around 0.05; in the following
+#' # examples we see that the default t.test shows higher than expected
+#' # rejection rates for autocorrelated data while the t_test remedies this
+#' # issue.
+#'
+#' estimateRejectionRate(1000, 1000, 0.5)
+#' estimateRejectionRate(1000, 1000, 0.9)
+#' estimateRejectionRate(1000, 1000, 0.5, method = "two.sample")
+#' estimateRejectionRate(1000, 1000, 0.5, 0.7, method = "two.sample")
+#' estimateRejectionRate(1000, 1000, 0.2, 0.9, method = "two.sample")
+#'
+#' @export
 #'
 t_test <- function (x, y = NULL, a1.x = 0, a1.y = 0,
     alternative = c("two.sided", "less", "greater"),
@@ -200,7 +258,58 @@ t_test <- function (x, y = NULL, a1.x = 0, a1.y = 0,
 #'   Massachusetts, \url{http://nrs.harvard.edu/urn-3:HUL.InstRepos:11108711},
 #'   2013.
 #' @author R Core Team, Thomas Münch
-#'@export
+#' @examples
+#'
+#' # Check the performance of the test on autocorrelated data
+#'
+#' # This function Monte Carlo samples autocorrelated data series from an AR1
+#' # process and runs the default ks test as well as the stattools ks_test to
+#' # estimate the tests' rejection rates, i.e. the relative number of false
+#' # positives where the tests reject the null hypothesis
+#' estimateRejectionRate <- function(nobs, nr, a1.x, a1.y = a1.x) {
+#'
+#'  # wrapper for random generation of AR1 series
+#'  redNoise <- function(a1, n) {c(arima.sim(list(ar = a1), n))}
+#'
+#'  # MC sampling of p values
+#'  pval <- array(dim = c(2, nr))
+#'  for (i in 1 : nr) {
+#'
+#'    x <- redNoise(a1.x, nobs)
+#'    y <- redNoise(a1.y, nobs)
+#'
+#'    tmp1 <- ks.test(x, y)
+#'    tmp2 <- ks_test(x, y, a1.x = a1.x, a1.y = a1.y)
+#'
+#'    # count false positives
+#'    if (tmp1$p.value <= 0.05) pval[1, i] <- 1 else pval[1, i] <- 0
+#'    if (tmp2$p.value <= 0.05) pval[2, i] <- 1 else pval[2, i] <- 0
+#'
+#'  }
+#'
+#'  # return null hypothesis rejection rates (type I error)
+#'  c(ks.test.default = sum(pval[1, ]) / nr,
+#'    ks_test = sum(pval[2, ]) / nr)
+#'
+#' }
+#'
+#' # The expectation is a rejection rate of around 0.05; in the following
+#' # examples we see that the default ks.test shows higher than expected
+#' # rejection rates for autocorrelated data while the ks_test remedies this
+#' # issue for identical autocorrelation...
+#'
+#' estimateRejectionRate(1000, 1000, 0.5)
+#' estimateRejectionRate(1000, 1000, 0.9)
+#'
+#' # ..., however, it shows rejection rates > 0.05 if the autoccorelation is
+#' # very different, for which the reason is unclear at the moment, with better
+#' # rejection rates for small sample sizes
+#'
+#' estimateRejectionRate(1000, 1000, 0.5, 0.6)
+#' estimateRejectionRate(1000, 1000, 0.5, 0.8)
+#' estimateRejectionRate(99, 1000, 0.5, 0.8)
+#'
+#' @export
 #'
 ks_test <- function (x, y, a1.x = 0, a1.y = 0,
                      alternative = c("two.sided", "less", "greater"), 

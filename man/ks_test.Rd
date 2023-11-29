@@ -58,6 +58,58 @@ function, thus it can only test whether the data are from the same or from
 different distributions and not test the data against a given cumulative
 distribution function, nor can it be used with class \code{formula}.
 }
+\examples{
+
+# Check the performance of the test on autocorrelated data
+
+# This function Monte Carlo samples autocorrelated data series from an AR1
+# process and runs the default ks test as well as the stattools ks_test to
+# estimate the tests' rejection rates, i.e. the relative number of false
+# positives where the tests reject the null hypothesis
+estimateRejectionRate <- function(nobs, nr, a1.x, a1.y = a1.x) {
+
+ # wrapper for random generation of AR1 series
+ redNoise <- function(a1, n) {c(arima.sim(list(ar = a1), n))}
+
+ # MC sampling of p values
+ pval <- array(dim = c(2, nr))
+ for (i in 1 : nr) {
+
+   x <- redNoise(a1.x, nobs)
+   y <- redNoise(a1.y, nobs)
+
+   tmp1 <- ks.test(x, y)
+   tmp2 <- ks_test(x, y, a1.x = a1.x, a1.y = a1.y)
+
+   # count false positives
+   if (tmp1$p.value <= 0.05) pval[1, i] <- 1 else pval[1, i] <- 0
+   if (tmp2$p.value <= 0.05) pval[2, i] <- 1 else pval[2, i] <- 0
+
+ }
+
+ # return null hypothesis rejection rates (type I error)
+ c(ks.test.default = sum(pval[1, ]) / nr,
+   ks_test = sum(pval[2, ]) / nr)
+
+}
+
+# The expectation is a rejection rate of around 0.05; in the following
+# examples we see that the default ks.test shows higher than expected
+# rejection rates for autocorrelated data while the ks_test remedies this
+# issue for identical autocorrelation...
+
+estimateRejectionRate(1000, 1000, 0.5)
+estimateRejectionRate(1000, 1000, 0.9)
+
+# ..., however, it shows rejection rates > 0.05 if the autoccorelation is
+# very different, for which the reason is unclear at the moment, with better
+# rejection rates for small sample sizes
+
+estimateRejectionRate(1000, 1000, 0.5, 0.6)
+estimateRejectionRate(1000, 1000, 0.5, 0.8)
+estimateRejectionRate(99, 1000, 0.5, 0.8)
+
+}
 \references{
 Xu, X.: Methods in Hypothesis Testing, Markov Chain Monte Carlo and
   Neuroimaging Data Analysis, PhD thesis, Harvard University, Cambridge,

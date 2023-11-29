@@ -59,6 +59,65 @@ according to user-supplied estimates of the data's autocorrelation parameters
 at lag one. Note that this code is adapted from the default method of the
 t.test function, thus it cannot be used with class \code{formula}.
 }
+\examples{
+
+# Check the performance of the test on autocorrelated data
+
+# This function Monte Carlo samples autocorrelated data series from an AR1
+# process and runs the default t test as well as the stattools t_test to
+# estimate the tests' rejection rates, i.e. the relative number of false
+# positives where the tests reject the null hypothesis
+estimateRejectionRate <- function(nobs, nr, a1.x, a1.y = a1.x,
+                                  method = c("one.sample", "two.sample")) {
+
+ method <- match.arg(method)
+
+ # wrapper for random generation of AR1 series
+ redNoise <- function(a1, n) {c(arima.sim(list(ar = a1), n))}
+
+ # MC sampling of p values
+ pval <- array(dim = c(2, nr))
+ for (i in 1 : nr) {
+
+   x <- redNoise(a1.x, nobs)
+   if (method == "two.sample") y <- redNoise(a1.y, nobs)
+
+   if (method == "one.sample") {
+
+     tmp1 <- t.test(x)
+     tmp2 <- t_test(x, a1.x = a1.x)
+
+   } else {
+
+     tmp1 <- t.test(x, y)
+     tmp2 <- t_test(x, y, a1.x = a1.x, a1.y = a1.y)
+
+   }
+
+   # count false positives
+   if (tmp1$p.value <= 0.05) pval[1, i] <- 1 else pval[1, i] <- 0
+   if (tmp2$p.value <= 0.05) pval[2, i] <- 1 else pval[2, i] <- 0
+
+ }
+
+ # return null hypothesis rejection rates (type I error)
+ c(t.test.default = sum(pval[1, ]) / nr,
+   t_test = sum(pval[2, ]) / nr)
+
+}
+
+# The expectation is a rejection rate of around 0.05; in the following
+# examples we see that the default t.test shows higher than expected
+# rejection rates for autocorrelated data while the t_test remedies this
+# issue.
+
+estimateRejectionRate(1000, 1000, 0.5)
+estimateRejectionRate(1000, 1000, 0.9)
+estimateRejectionRate(1000, 1000, 0.5, method = "two.sample")
+estimateRejectionRate(1000, 1000, 0.5, 0.7, method = "two.sample")
+estimateRejectionRate(1000, 1000, 0.2, 0.9, method = "two.sample")
+
+}
 \seealso{
 \code{\link[stats]{t.test}}, \code{\link{getEffectiveDOF}}
 }
