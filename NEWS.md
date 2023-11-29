@@ -1,3 +1,10 @@
+# stattools 0.5.0
+
+* **New** functions `t_test()` and `ks_test()` to perform Student's t-Test and
+  Kolmogorov-Smirnov Test on autocorrelated data.
+* The addition of these functions makes a license change necessary. `stattools`
+  is now distributed under GPL (>= 3).
+
 # stattools 0.4.0
 
 * **New** function `getEffectiveDOF()` to calculate the effective degrees of

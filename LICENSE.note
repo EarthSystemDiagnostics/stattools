@@ -1,0 +1,8 @@
+The stattools package as a whole is distributed under GPL (>= 3). The stattools
+package includes other open source software components. The following is a list
+of these components:
+
+* t_test: Code adapted from function t.test.default in package stats (R base):
+  GPL-2 | GPL-3
+* ks_test: Code adapted from function ks.test.default in package stats (R base):
+  GPL-2 | GPL-3
