@@ -113,7 +113,7 @@ t_test <- function (x, y = NULL, a1.x = 0, a1.y = 0,
   if (!is.null(y)) {
     dname <- paste(deparse1(substitute(x)), "and", deparse1(substitute(y)))
     if (paired) 
-      xok <- yok <- complete.cases(x, y)
+      xok <- yok <- stats::complete.cases(x, y)
     else {
       yok <- !is.na(y)
       xok <- !is.na(x)
@@ -136,7 +136,7 @@ t_test <- function (x, y = NULL, a1.x = 0, a1.y = 0,
   nx <- stattools::getEffectiveDOF(length(x), a1.x)
   ## <-
   mx <- mean(x)
-  vx <- var(x)
+  vx <- stats::var(x)
   if (is.null(y)) {
     if (nx < 2) 
       stop("not enough 'x' observations")
@@ -148,7 +148,7 @@ t_test <- function (x, y = NULL, a1.x = 0, a1.y = 0,
     method <- if (paired) 
                 "Paired t-test"
               else "One Sample t-test"
-    estimate <- setNames(mx, if (paired) 
+    estimate <- stats::setNames(mx, if (paired) 
                                "mean difference"
                              else "mean of x")
   }
@@ -163,7 +163,7 @@ t_test <- function (x, y = NULL, a1.x = 0, a1.y = 0,
     if (var.equal && nx + ny < 3) 
       stop("not enough observations")
     my <- mean(y)
-    vy <- var(y)
+    vy <- stats::var(y)
     method <- paste(if (!var.equal) 
                       "Welch", "Two Sample t-test")
     estimate <- c(mx, my)
@@ -191,17 +191,17 @@ t_test <- function (x, y = NULL, a1.x = 0, a1.y = 0,
     tstat <- (mx - my - mu)/stderr
   }
   if (alternative == "less") {
-    pval <- pt(tstat, df)
-    cint <- c(-Inf, tstat + qt(conf.level, df))
+    pval <- stats::pt(tstat, df)
+    cint <- c(-Inf, tstat + stats::qt(conf.level, df))
   }
   else if (alternative == "greater") {
-    pval <- pt(tstat, df, lower.tail = FALSE)
-    cint <- c(tstat - qt(conf.level, df), Inf)
+    pval <- stats::pt(tstat, df, lower.tail = FALSE)
+    cint <- c(tstat - stats::qt(conf.level, df), Inf)
   }
   else {
-    pval <- 2 * pt(-abs(tstat), df)
+    pval <- 2 * stats::pt(-abs(tstat), df)
     alpha <- 1 - conf.level
-    cint <- qt(1 - alpha/2, df)
+    cint <- stats::qt(1 - alpha/2, df)
     cint <- tstat + c(-cint, cint)
   }
   cint <- mu + cint * stderr
@@ -359,18 +359,22 @@ ks_test <- function (x, y, a1.x = 0, a1.y = 0,
   n.x.eff <- n.x * (1 - a1.x)
   n.y.eff <- n.y * (1 - a1.y)
   PVAL <- switch(alternative,
-                 two.sided = psmirnov(STATISTIC, sizes = c(n.x.eff, n.y.eff),
-                                      z = w, exact = exact,
-                                      simulate = simulate.p.value, B = B,
-                                      lower.tail = FALSE),
-                 less = psmirnov(STATISTIC, sizes = c(n.x.eff, n.y.eff), ,
-                                 z = w, exact = exact,
-                                 simulate = simulate.p.value, B = B,
+                 two.sided = stats::psmirnov(STATISTIC,
+                                             sizes = c(n.x.eff, n.y.eff),
+                                             z = w, exact = exact,
+                                             simulate = simulate.p.value, B = B,
+                                             lower.tail = FALSE),
+                 less = stats::psmirnov(STATISTIC,
+                                        sizes = c(n.x.eff, n.y.eff), ,
+                                        z = w, exact = exact,
+                                        simulate = simulate.p.value, B = B,
                                  two.sided = FALSE, lower.tail = FALSE),
-                 greater = psmirnov(STATISTIC, sizes = c(n.x.eff, n.y.eff), ,
-                                    z = w, exact = exact,
-                                    simulate = simulate.p.value, B = B,
-                                    two.sided = FALSE, lower.tail = FALSE))
+                 greater = stats::psmirnov(STATISTIC,
+                                           sizes = c(n.x.eff, n.y.eff), ,
+                                           z = w, exact = exact,
+                                           simulate = simulate.p.value, B = B,
+                                           two.sided = FALSE,
+                                           lower.tail = FALSE))
   ## <-
   if (simulate.p.value)
     PVAL <- (1 + (PVAL * B))/(B + 1)
